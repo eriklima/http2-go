@@ -31,7 +31,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Server running on port: 3443")
+	fmt.Println("Server running on PORT: 3443")
 }
 
 func baseHandler(w http.ResponseWriter, r *http.Request) {
