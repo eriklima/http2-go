@@ -54,7 +54,6 @@ func main() {
 			}
 			t2 = time.Now()
 
-			// printf("\n%s%s\n", color.GreenString("Connected to "), color.CyanString(addr))
 			fmt.Printf("\nConnected to %s\n", addr)
 		},
 		DNSStart:             func(_ httptrace.DNSStartInfo) { t0 = time.Now() },
