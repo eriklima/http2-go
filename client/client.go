@@ -75,11 +75,10 @@ func main() {
 
 	trace := &httptrace.ClientTrace{
 		ConnectStart: func(_, _ string) {
-			// if t1.IsZero() {
-			// 	// connecting to IP
-			// 	t1 = time.Now()
-			// }
-			t1 = time.Now()
+			if t1.IsZero() {
+				// connecting to IP
+				t1 = time.Now()
+			}
 			fmt.Println("Connecting to IP...")
 		},
 		ConnectDone: func(net, addr string, err error) {
