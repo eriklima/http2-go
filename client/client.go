@@ -7,7 +7,6 @@ import (
 	"crypto/x509"
 	"encoding/csv"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"net/http/httptrace"
@@ -193,17 +192,17 @@ func tlsConfig() *tls.Config {
 	}
 }
 
-func getBody(response *http.Response) []byte {
-	body := &bytes.Buffer{}
+// func getBody(response *http.Response) []byte {
+// 	body := &bytes.Buffer{}
 
-	_, err := io.Copy(body, response.Body)
+// 	_, err := io.Copy(body, response.Body)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	return body.Bytes()
-}
+// 	return body.Bytes()
+// }
 
 func saveMetrics(metrics *Metrics) {
 	f, err := os.OpenFile(path.Join(certPath, "metrics.csv"), os.O_WRONLY|os.O_APPEND, os.ModeAppend)
