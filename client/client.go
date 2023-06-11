@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -47,7 +48,11 @@ func setupCertPath() {
 }
 
 func main() {
-	loopCount := 20
+	server := flag.String("server", "localhost:3443", "IP:PORT for HTTP2 server")
+	parallel := flag.Int("parallel", 1, "Number of parallel requests")
+	flag.Parse()
+
+	loopCount := *parallel
 	var wg sync.WaitGroup
 
 	wg.Add(loopCount)
@@ -63,7 +68,8 @@ func main() {
 			var err error
 			// host := "https://localhost:3443"
 			// host := "https://192.168.1.8:3443"
-			host := "https://193.167.100.100:3443"
+			// host := "https://193.167.100.100:3443"
+			host := "https://" + *server
 
 			if len(*buf) == 0 {
 				req, err = http.NewRequest("GET", host, nil)
@@ -91,7 +97,7 @@ func main() {
 						// connecting to IP
 						t1 = time.Now()
 					}
-					fmt.Println("EVENT: ConnectStart", t1.Sub(tInit))
+					// fmt.Println("EVENT: ConnectStart", t1.Sub(tInit))
 				},
 				ConnectDone: func(net, addr string, err error) {
 					if err != nil {
@@ -99,21 +105,21 @@ func main() {
 					}
 					t2 = time.Now()
 
-					fmt.Println("EVENT: ConnectDone", t2.Sub(tInit))
+					// fmt.Println("EVENT: ConnectDone", t2.Sub(tInit))
 				},
 				DNSStart: func(_ httptrace.DNSStartInfo) { t0 = time.Now() },
 				DNSDone:  func(_ httptrace.DNSDoneInfo) { t1 = time.Now() },
 				GetConn: func(_ string) {
 					tGetConn = time.Now()
-					fmt.Println("EVENT: GetConn", tGetConn.Sub(tInit))
+					// fmt.Println("EVENT: GetConn", tGetConn.Sub(tInit))
 				},
 				GotConn: func(_ httptrace.GotConnInfo) {
 					t3 = time.Now()
-					fmt.Println("EVENT: GotConn", t3.Sub(tInit))
+					// fmt.Println("EVENT: GotConn", t3.Sub(tInit))
 				},
 				GotFirstResponseByte: func() {
 					t4 = time.Now()
-					fmt.Println("EVENT: GotFirstResponseByte", t4.Sub(tInit))
+					// fmt.Println("EVENT: GotFirstResponseByte", t4.Sub(tInit))
 				},
 				TLSHandshakeStart: func() {
 					t5 = time.Now()
@@ -140,7 +146,7 @@ func main() {
 			}
 
 			t7 := time.Now() // after read body
-			fmt.Println("EVENT: ResponseReady", t7.Sub(tInit))
+			// fmt.Println("EVENT: ResponseReady", t7.Sub(tInit))
 
 			// res, err := client.Get("https://localhost:3443")
 			// if err != nil {

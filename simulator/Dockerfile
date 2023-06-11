@@ -22,11 +22,11 @@ ENV GO111MODULE=on
 COPY http2/ http2/
 
 WORKDIR /http2
-RUN go mod tidy
+# RUN go mod tidy
 
 # Build HTTP3's client and server
-RUN go build -o client/client ./client/client.go
-RUN go build -o server ./server.go
+# RUN go build -o client/client ./client/client.go
+# RUN go build -o server ./server.go
 
 # Copy run script and run it
 COPY run_endpoint.sh .

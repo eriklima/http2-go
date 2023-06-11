@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"crypto/tls"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,20 +15,22 @@ import (
 var randomResponse *[]byte
 
 func main() {
+	addr := flag.String("addr", "localhost:3443", "Server listening to IP:PORT")
+	nbytes := flag.Int("bytes", 1_000_000_000, "Number of bytes to send to the server")
+	flag.Parse()
+
 	fmt.Println("Creating buffer...")
 
-	randomResponse = createBuf(1000 * 1000 * 1000)
-	// randomResponse = createBuf(1000)
+	// randomResponse = createBuf(1000 * 1000 * 1000)
+	randomResponse = createBuf(*nbytes)
 
 	fmt.Printf("Buffer created with %d bytes\n", len(*randomResponse))
 
 	// http.HandleFunc("/test", baseHandler)
 	// log.Fatal(http.ListenAndServeTLS(":3443", "keys/cert.pem", "keys/priv.key", nil))
 
-	serverAddr := ":3443"
-
 	server := &http.Server{
-		Addr:      serverAddr,
+		Addr:      *addr,
 		TLSConfig: tlsConfig(),
 	}
 
@@ -37,7 +40,7 @@ func main() {
 
 	http.HandleFunc("/", baseHandler)
 
-	fmt.Printf("HTTP2 Server listening on %s\n", serverAddr)
+	fmt.Printf("HTTP2 Server listening on %s\n", *addr)
 
 	// TODO: testar passando certificado e chave aqui (igual ao HTTP3) e não no TLSConfig
 	if err := server.ListenAndServeTLS("", ""); err != nil {
