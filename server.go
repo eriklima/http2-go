@@ -17,6 +17,7 @@ func main() {
 	fmt.Println("Creating buffer...")
 
 	randomResponse = createBuf(1000 * 1000 * 1000)
+	// randomResponse = createBuf(1000)
 
 	fmt.Printf("Buffer created with %d bytes\n", len(*randomResponse))
 
@@ -66,6 +67,7 @@ func createBuf(size int) *[]byte {
 func baseHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Protocol: ", r.Proto, r.Method)
 	// fmt.Fprintf(w, "Hello, World!")
+	w.Header().Add("X-Body-Size", fmt.Sprintf("%d", len(*randomResponse)))
 	w.Write(*randomResponse)
 }
 
