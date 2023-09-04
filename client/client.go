@@ -8,6 +8,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptrace"
@@ -145,6 +146,8 @@ func main() {
 				log.Fatalf("failed to read response: %v", err)
 			}
 
+			body := getBody(res)
+
 			t7 := time.Now() // after read body
 			// fmt.Println("EVENT: ResponseReady", t7.Sub(tInit))
 
@@ -155,10 +158,11 @@ func main() {
 
 			bodySize := res.Header.Get("X-Body-Size")
 
-			// body := getBody(res)
 			// responseLength := res.Body.
 			// fmt.Printf("Body size: %v\n", body)
 			// fmt.Printf("Body size Recalc: %d\n", len(body))
+
+			// saveBody(body)
 
 			res.Body.Close()
 
@@ -193,7 +197,8 @@ func main() {
 
 			fmt.Printf("\nProtocol: %s %s\n", res.Proto, req.Method)
 			fmt.Printf("Code: %d\n", res.StatusCode)
-			// fmt.Printf("Body: %s\n", body)
+			fmt.Printf("Content-Length: %d\n", res.ContentLength)
+			fmt.Printf("Body: %d\n", len(body))
 			// fmt.Printf("Body Length: %d\n\n", responseLength)
 			fmt.Printf("Body Size Header: %s\n", bodySize)
 
@@ -238,21 +243,51 @@ func tlsConfig() *tls.Config {
 	}
 }
 
-// func getBody(response *http.Response) []byte {
-// 	body := &bytes.Buffer{}
+func getBody(response *http.Response) []byte {
+	body := &bytes.Buffer{}
 
-// 	_, err := io.Copy(body, response.Body)
+	_, err := io.Copy(body, response.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return body.Bytes()
+}
+
+// func getBody(response *http.Response) []byte {
+// 	body, err := io.ReadAll(response.Body)
 
 // 	if err != nil {
 // 		log.Fatal(err)
 // 	}
 
-// 	return body.Bytes()
+// 	return body
+// }
+
+// func saveBody(body []byte) {
+// 	f, err := os.OpenFile("./body.txt", os.O_WRONLY|os.O_CREATE, 0644)
+// 	check(err)
+
+// 	defer f.Close()
+
+// 	wBytes, err := f.Write(body)
+// 	check(err)
+
+// 	fmt.Printf("Bytes written: %d\n", wBytes)
+
+// 	f.Sync()
+// }
+
+// func check(e error) {
+// 	if e != nil {
+// 		panic(e)
+// 	}
 // }
 
 func saveMetrics(metrics *Metrics) {
 	// f, err := os.OpenFile(path.Join(certPath, "metrics.csv"), os.O_WRONLY|os.O_APPEND, os.ModeAppend)
-	f, err := os.OpenFile("./metrics.csv", os.O_WRONLY|os.O_APPEND, os.ModeAppend)
+	f, err := os.OpenFile("/logs/metrics.csv", os.O_WRONLY|os.O_APPEND, os.ModeAppend)
 	if err != nil {
 		// fmt.Println(err)
 		// return
