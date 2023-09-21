@@ -15,6 +15,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 
@@ -51,6 +52,7 @@ func setupCertPath() {
 func main() {
 	server := flag.String("server", "localhost:3443", "IP:PORT for HTTP2 server")
 	parallel := flag.Int("parallel", 1, "Number of parallel requests")
+	experNumber := flag.Int("expernumber", 1, "Number of the experiment")
 	flag.Parse()
 
 	loopCount := *parallel
@@ -70,7 +72,7 @@ func main() {
 			// host := "https://localhost:3443"
 			// host := "https://192.168.1.8:3443"
 			// host := "https://193.167.100.100:3443"
-			host := "https://" + *server
+			host := "https://" + *server + "/" + strconv.Itoa(*experNumber)
 
 			if len(*buf) == 0 {
 				req, err = http.NewRequest("GET", host, nil)

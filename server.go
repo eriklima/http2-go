@@ -8,23 +8,30 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"golang.org/x/net/http2"
 )
 
-var randomResponse *[]byte
+// var randomResponse *[]byte
+var responses [4]*[]byte
 
 func main() {
 	addr := flag.String("addr", "localhost:3443", "Server listening to IP:PORT")
-	nbytes := flag.Int("bytes", 1_000_000_000, "Number of bytes to send to the server")
+	nbytes := flag.Int("bytes", 1_000_000, "Number of bytes to send to the server")
 	flag.Parse()
 
 	fmt.Println("Creating buffer...")
 
 	// randomResponse = createBuf(1000 * 1000 * 1000)
-	randomResponse = createBuf(*nbytes)
+	// randomResponse = createBuf(*nbytes)
 
-	fmt.Printf("Buffer created with %d bytes\n", len(*randomResponse))
+	responses[0] = createBuf(*nbytes)
+	responses[1] = createBuf(*nbytes * 2)
+	responses[2] = createBuf(*nbytes * 4)
+	responses[3] = createBuf(*nbytes * 8)
+
+	// fmt.Printf("Buffer created with %d bytes\n", len(*randomResponse))
 
 	// http.HandleFunc("/test", baseHandler)
 	// log.Fatal(http.ListenAndServeTLS(":3443", "keys/cert.pem", "keys/priv.key", nil))
@@ -70,8 +77,19 @@ func createBuf(size int) *[]byte {
 func baseHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Protocol: ", r.Proto, r.Method)
 	// fmt.Fprintf(w, "Hello, World!")
-	w.Header().Add("X-Body-Size", fmt.Sprintf("%d", len(*randomResponse)))
-	w.Write(*randomResponse)
+
+	paramString := r.URL.Path[1:]
+	paramNumber, err := strconv.ParseInt(paramString, 10, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Param: %d\n", paramNumber)
+
+	response := *responses[paramNumber-1]
+
+	w.Header().Add("X-Body-Size", fmt.Sprintf("%d", len(response)))
+	w.Write(response)
 }
 
 func tlsConfig() *tls.Config {
