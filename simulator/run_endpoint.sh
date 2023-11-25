@@ -23,7 +23,15 @@ if [ "$ROLE" == "client" ]; then
     # ./client/client
 
     cd client/
-    ./client --server=193.167.100.100:3443 $CLIENT_PARAMS
+    # ./client --server=193.167.100.100:3443 $CLIENT_PARAMS
+
+    for exper in {1..4};do
+        echo "Experimento (payload): $exper";
+        for i in {1..11};do
+            echo "Repetição: $i"
+            ./client --server=193.167.100.100:3443 $CLIENT_PARAMS -expernumber=$exper
+        done
+    done
 elif [ "$ROLE" == "server" ]; then
     # It is recommended to increase the maximum buffer size (https://github.com/quic-go/quic-go/wiki/UDP-Receive-Buffer-Size)
     # sysctl -w net.core.rmem_max=2500000
