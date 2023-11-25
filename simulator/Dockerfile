@@ -10,9 +10,9 @@ RUN apt-get update
 # Download and build your QUIC implementation
 RUN apt-get install -y wget tar git vim python
 
-RUN wget https://go.dev/dl/go1.19.5.linux-amd64.tar.gz && \
-  tar xfz go1.19.5.linux-amd64.tar.gz && \
-  rm go1.19.5.linux-amd64.tar.gz
+RUN wget https://go.dev/dl/go1.21.4.linux-amd64.tar.gz && \
+  tar xfz go1.21.4.linux-amd64.tar.gz && \
+  rm go1.21.4.linux-amd64.tar.gz
 
 ENV PATH="/go/bin:${PATH}"
 ENV GO111MODULE=on
