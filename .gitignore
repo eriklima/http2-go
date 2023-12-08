@@ -23,4 +23,4 @@ go.work
 # Project's files and folders
 **/metrics.csv
 **/server
-**/client
+**/client/client
